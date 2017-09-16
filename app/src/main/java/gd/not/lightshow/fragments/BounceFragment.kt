@@ -1,52 +1,73 @@
 package gd.not.lightshow.fragments
 
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.util.Log
-import android.view.LayoutInflater
+import android.graphics.PorterDuff
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import gd.not.lightshow.MainActivity
+import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.TextView
+import gd.not.lightshow.LightShowService
 import gd.not.lightshow.R
 import gd.not.lightshow.views.BounceView
-import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.find
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
-class BounceFragment : Fragment(), BounceView.OnBounceListener {
+class BounceFragment : LightshowFragment(), BounceView.OnBounceListener {
   private val TAG = "BounceFragment"
 
-  var mainActivity: MainActivity? = null
+  var seekBar: SeekBar? = null
+  var seekbarSpeed: TextView? = null
 
-  override fun onStart() {
-    super.onStart()
-    mainActivity = activity as MainActivity
-  }
+  override fun getLayoutId(): Int = R.layout.fragment_bounce
 
-  override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    val view = inflater?.inflate(R.layout.fragment_bounce, container, false)
-    val bounceView = view?.find<BounceView>(R.id.bouncer)
-    bounceView?.listener = this
+  override fun createView(view: View) {
+    val bounceView = view.find<BounceView>(R.id.bouncer)
+    bounceView.listener = this
+    seekBar = view.find(R.id.speed)
+    seekbarSpeed = view.find(R.id.seekbarSpeed)
 
-    view?.find<Button>(R.id.button_reset)?.onClick {
-      bg { mainActivity?.service?.clearDots() }
+    view.find<ImageButton>(R.id.button_reset).onClick {
+      service?.clearDots()
     }
 
-    return view
+    view.find<ImageButton>(R.id.button_start).onClick {
+      service?.bounce(true)
+    }
+
+    seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onStartTrackingTouch(p0: SeekBar?) {
+      }
+
+      override fun onStopTrackingTouch(p0: SeekBar?) {
+      }
+
+      override fun onProgressChanged(p0: SeekBar?, p1: Int, fromUser: Boolean) {
+        if (fromUser) {
+          val speed = p1 * 0.01F
+          onSpeedSet(speed, false)
+          service?.speedFactor = speed
+        }
+      }
+    })
+  }
+
+  override fun onStateAvailable(service: LightShowService, color: Int, brightness: Int, speedFactor: Float) {
+    onSpeedSet(speedFactor, true)
   }
 
   override fun onDotPlaced(color: Int, size: Int, position: Int) {
-    Log.d(TAG, "onDotPlaced at $position (size: $size)")
-    bg {
-      mainActivity?.service?.dot(color, position, size)
-    }
+//    mainActivity?.setColor(color, false)
+    seekBar?.progressDrawable?.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
+    service?.dot(color, position, size)
   }
 
   override fun onBounce(color: Int, size: Int, position: Int, velocity: Float) {
-    Log.d(TAG, "onBounce at $position (size: $size) with velocity $velocity")
-    bg {
-      mainActivity?.service?.addDot(color, position, velocity, size)
+    service?.addDot(color, position, velocity, size)
+  }
+
+  fun onSpeedSet(speed: Float, setProgress: Boolean = false) {
+    seekbarSpeed!!.text = getString(R.string.speed, speed)
+    if (setProgress) {
+      seekBar!!.setProgress((speed * 100).toInt(), false)
     }
   }
 }

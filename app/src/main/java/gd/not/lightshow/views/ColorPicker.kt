@@ -25,7 +25,7 @@ class ColorPicker : View {
   init {
     this.isDrawingCacheEnabled = true
 
-    paint.isAntiAlias = true
+//    paint.isAntiAlias = true
 
     paintShadow.isAntiAlias = true
 //    setLayerType(LAYER_TYPE_SOFTWARE, paintShadow)
@@ -57,15 +57,14 @@ class ColorPicker : View {
     )
     val segRadius = availableSpace / 6F
 
-    val scales = floatArrayOf(0F, 3F, 2F, 1.5F, 1.25F, 1.125F)
-
-
-
-    for (i in 0..5) {
-      val left = paddingLeft.toFloat() + (segRadius * i * scales[i])
-      val top = paddingTop.toFloat() + (segRadius * i * scales[i])
-      val right = width.toFloat() - (paddingRight + (segRadius * i * scales[i]))
-      val bottom = height.toFloat() - (paddingBottom + (segRadius * i * scales[i]))
+//    val scales = floatArrayOf(0F, 3F, 2F, 1.5F, 1.25F, 1.125F)
+//
+//    for (i in 0..5) {
+    for (i in 0..0) {
+      val left = paddingLeft.toFloat() + (segRadius * i)
+      val top = paddingTop.toFloat() + (segRadius * i)
+      val right = width.toFloat() - (paddingRight + (segRadius * i))
+      val bottom = height.toFloat() - (paddingBottom + (segRadius * i))
       if (i == 5) {
         paint.setARGB(255, 255, 255, 255)
         canvas?.drawOval(left, top, right, bottom, paint)
@@ -89,7 +88,7 @@ class ColorPicker : View {
           if (pixel != null) {
             this.listener?.onColorPicked(pixel)
           }
-        } catch(e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
           // ignore
         }
       }

@@ -1,0 +1,7 @@
+<svg height="202" width="202">
+    <g stroke="#fff" stroke-width="2" transform="translate(101,101)">
+        <path d="M0 0 0 -99A99 99 0 0 1 85.7365 49.5Z" fill="#c22" />
+        <path d="M0 0 85.7365 49.5A99 99 0 0 1 -85.7365 49.5Z" fill="#2c2" />
+        <path d="M0 0 -85.7365 49.5A99 99 0 0 1 0 -99Z" fill="#22c" />
+    </g>
+</svg>

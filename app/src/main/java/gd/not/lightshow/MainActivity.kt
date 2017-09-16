@@ -15,29 +15,26 @@ import gd.not.lightshow.fragments.BounceFragment
 import gd.not.lightshow.fragments.ColorFragment
 import gd.not.lightshow.fragments.LightshowFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.coroutines.experimental.bg
 
 
-class MainActivity : AppCompatActivity(), AnkoLogger {
-
+class MainActivity : AppCompatActivity(), LightShowService.OnStateAvailableCallback {
   private val TAG = "MainActivity"
-  var selectedFragment: LightshowFragment? = null
 
+  var selectedFragment: LightshowFragment? = null
+  var service: LightShowService? = null
   private val mServiceConn = object : ServiceConnection {
     override fun onServiceDisconnected(p0: ComponentName?) {
       service = null
+      Log.d(TAG, "Service disconnected")
     }
 
     override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
       service = (p1 as LightShowService.LocalBinder).getService()
-      Log.d(TAG, "bound to lameoid service or whatevs")
-
-      selectedFragment?.onServiceConnected(service!!)
+      service!!.stateAvailableCallback = this@MainActivity
+      selectedFragment?.service = service
+      Log.d(TAG, "Service connected, selectedFragment=$selectedFragment")
     }
   }
-
-  var service: LightShowService? = null
 
   private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
     when (item.itemId) {
@@ -53,10 +50,17 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     false
   }
 
-  fun setFragment(frag: Fragment) {
-    val trans = supportFragmentManager.beginTransaction()
-    trans.replace(R.id.container, frag)
-    trans.commit()
+  override fun onStateAvailable(service: LightShowService, color: Int, brightness: Int, speedFactor: Float) {
+    Log.d(TAG, "State available, delegating to $selectedFragment")
+    selectedFragment?.onStateAvailable(service, color, brightness, speedFactor)
+  }
+
+  fun setFragment(frag: LightshowFragment) {
+    Log.d(TAG, "setting fragment to $frag")
+
+    supportFragmentManager.beginTransaction()
+      .replace(R.id.container, frag)
+      .commit()
   }
 
   fun setColor(color: Int, submit: Boolean? = true) {
@@ -71,10 +75,12 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     window.navigationBarColor = darkColor
     Log.d(TAG, "setting color to $color")
     if (submit == true) {
-      bg {
-        service?.setColor(color)
-      }
+      service?.color = color
     }
+  }
+
+  fun querySpeed() {
+
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

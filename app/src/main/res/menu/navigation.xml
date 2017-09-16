@@ -4,11 +4,11 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_palette_black_24dp"
-        android:title="Colors" />
+        android:title="@string/title_colors" />
 
     <item
         android:id="@+id/navigation_bounce"
         android:icon="@drawable/ic_trending_flat_black_24dp"
-        android:title="Bounce" />
+        android:title="@string/title_bounce" />
 
 </menu>

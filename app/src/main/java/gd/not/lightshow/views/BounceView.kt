@@ -77,7 +77,13 @@ class BounceView : View {
     @Suppress("DUPLICATE_LABEL_IN_WHEN")
     when (event?.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
-        val hue = 360 * event.x / width
+        val x = event.x - paddingLeft
+        val w = (width - (paddingLeft + paddingRight))
+        if (x < 0 || x > (width - paddingRight)) {
+          // ignore motion events which started in the padding
+          return false
+        }
+        val hue = 360 * x / w
         Log.d(TAG, "pointer down with hue: $hue")
         paintDot.color = ColorUtils.HSLToColor(floatArrayOf(hue, 1F, 0.5F))
         touchStart = System.currentTimeMillis()
@@ -87,7 +93,7 @@ class BounceView : View {
         touchedX = event.x
         touchedY = event.y
         touching = true
-        dotSize = Math.min(20, 1 + ((System.currentTimeMillis() - touchStart) / 200)).toInt()
+        dotSize = Math.min(50, 1 + ((System.currentTimeMillis() - touchStart) / 150)).toInt()
         listener?.onDotPlaced(paintDot.color, dotSize, withinBounds((touchedY / height * 288).toInt()))
         invalidate()
       }
@@ -103,15 +109,18 @@ class BounceView : View {
   override fun onDraw(canvas: Canvas?) {
     if (canvas != null) {
       val color = floatArrayOf(0F, 1F, 0.5F)
-      val w = canvas.width / 288F
-      for (i in 0..288) {
-        color[0] = (i / 288F) * 360F
-        paintBg.color = ColorUtils.setAlphaComponent(ColorUtils.HSLToColor(color), 100)
-        canvas.drawRect(i * w, 0F, (i * w) + w, canvas.height.toFloat(), paintBg)
+      val numStripes = 180
+      val w = (canvas.width - (paddingLeft + paddingRight)) / numStripes
+      for (i in 0..numStripes) {
+        color[0] = i * (360F / numStripes)
+        paintBg.color = ColorUtils.HSLToColor(color)
+        paintBg.alpha = 100
+        canvas.drawRect((paddingLeft + (i * w)).toFloat(), paddingTop.toFloat(), (paddingLeft + (i * w) + w).toFloat(), canvas.height.toFloat() - paddingBottom, paintBg)
       }
 
       if (touching) {
-        canvas.drawCircle(touchedX, touchedY, dotSize * 20F, paintDot)
+        paintDot.setShadowLayer(10F, 0F, 0F, paintDot.color)
+        canvas.drawCircle(touchedX, touchedY, 20F + dotSize * 10F, paintDot)
       }
     }
   }
