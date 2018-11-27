@@ -55,7 +55,7 @@ class LightShowService : Service() {
     }
     set(color) {
       bg {
-        writeData(byteArrayOf(ID_FLAT_COLOR, (color shr 24).toByte(), (color shr 16).toByte(), (color shr 8).toByte(), color.toByte()))
+        writeData(byteArrayOf(ID_FLAT_COLOR, 0x00, (color shr 16).toByte(), (color shr 8).toByte(), color.toByte()))
         _color = color
       }
     }

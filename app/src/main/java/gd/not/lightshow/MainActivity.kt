@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.graphics.ColorUtils
@@ -85,6 +86,9 @@ class MainActivity : AppCompatActivity(), LightShowService.OnStateAvailableCallb
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
     setContentView(R.layout.activity_main)
 
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)

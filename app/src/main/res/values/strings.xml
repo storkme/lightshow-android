@@ -3,4 +3,15 @@
     <string name="title_colors">Colours</string>
     <string name="title_bounce">Bounce</string>
     <string name="speed">%1$.1fx</string>
+
+    <string name="pref_hostname">Hostname</string>
+    <string name="pref_hostname_summ">IP address or hostname where the light strip server is running.</string>
+    <string name="pref_hostname_default">192.168.1.3</string>
+    <string name="pref_port">Port</string>
+    <string name="pref_port_summ">TCP port the light strip server is listening on.</string>
+    <string name="pref_port_default">43594</string>
+
+    <string name="pref_connectivity_title">Connectivity</string>
+
+
 </resources>
