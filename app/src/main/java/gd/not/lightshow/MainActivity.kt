@@ -12,10 +12,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import gd.not.lightshow.databinding.ActivityMainBinding
 import gd.not.lightshow.fragments.BounceFragment
 import gd.not.lightshow.fragments.ColorFragment
 import gd.not.lightshow.fragments.LightshowFragment
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), LightShowService.OnStateAvailableCallback {
@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity(), LightShowService.OnStateAvailableCallb
 
   var selectedFragment: LightshowFragment? = null
   var service: LightShowService? = null
+
+  private lateinit var binding: ActivityMainBinding
+
   private val mServiceConn = object : ServiceConnection {
     override fun onServiceDisconnected(p0: ComponentName?) {
       service = null
@@ -89,9 +92,10 @@ class MainActivity : AppCompatActivity(), LightShowService.OnStateAvailableCallb
 
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-    setContentView(R.layout.activity_main)
+    binding = ActivityMainBinding.inflate(layoutInflater)
 
-    navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    setContentView(binding.root)
+    binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     setFragment(ColorFragment())
   }
 

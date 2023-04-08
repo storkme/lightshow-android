@@ -34,34 +34,32 @@ class BounceView : View {
   var listener: OnBounceListener? = null
 
   val gestureDetector = GestureDetectorCompat(context, object : GestureDetector.OnGestureListener {
-    override fun onShowPress(p0: MotionEvent?) {
+    override fun onShowPress(p0: MotionEvent) {
     }
 
-    override fun onSingleTapUp(p0: MotionEvent?): Boolean {
+    override fun onSingleTapUp(p0: MotionEvent): Boolean {
       return false
     }
 
-    override fun onDown(p0: MotionEvent?): Boolean {
+    override fun onDown(p0: MotionEvent): Boolean {
       return false
     }
 
-    override fun onFling(p0: MotionEvent?, p1: MotionEvent?, vX: Float, vY: Float): Boolean {
-      if (p0 != null && p1 != null) {
-        val position = Math.floor(((p1.y / height) * 288).toDouble()).toInt()
+    override fun onFling(p0: MotionEvent, p1: MotionEvent, vX: Float, vY: Float): Boolean {
+      val position = Math.floor(((p1.y / height) * 288).toDouble()).toInt()
 
-        // vY is pixels per second along the y axis
-        val velocity = (vY / height) / 5
+      // vY is pixels per second along the y axis
+      val velocity = (vY / height) / 5
 
-        listener?.onBounce(paintDot.color, dotSize, withinBounds(position), velocity)
-      }
+      listener?.onBounce(paintDot.color, dotSize, withinBounds(position), velocity)
       return true
     }
 
-    override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+    override fun onScroll(p0: MotionEvent, p1: MotionEvent, p2: Float, p3: Float): Boolean {
       return false
     }
 
-    override fun onLongPress(p0: MotionEvent?) {
+    override fun onLongPress(p0: MotionEvent) {
     }
   })
 

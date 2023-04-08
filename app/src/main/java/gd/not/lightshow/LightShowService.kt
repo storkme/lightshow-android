@@ -4,11 +4,12 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
-import org.jetbrains.anko.coroutines.experimental.bg
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
-import java.io.DataOutput
 import java.io.DataOutputStream
 import java.net.*
 
@@ -36,13 +37,16 @@ class LightShowService : Service() {
   var stateAvailableCallback: OnStateAvailableCallback? = null
   var stateAvailable = false
 
+  private val job = SupervisorJob()
+  private val scope = CoroutineScope(Dispatchers.IO + job)
+
   private var _brightness = 0
   var brightness: Int
     get() {
       return _brightness
     }
     set(level) {
-      bg {
+      scope.launch {
         writeData(byteArrayOf(ID_BRIGHTNESS, level.toByte()))
         _brightness = level
       }
@@ -54,7 +58,7 @@ class LightShowService : Service() {
       return _color
     }
     set(color) {
-      bg {
+      scope.launch {
         writeData(byteArrayOf(ID_FLAT_COLOR, 0x00, (color shr 16).toByte(), (color shr 8).toByte(), color.toByte()))
         _color = color
       }
@@ -66,7 +70,7 @@ class LightShowService : Service() {
       return _speedFactor
     }
     set(speed) {
-      bg {
+      scope.launch {
         val out = ByteArrayOutputStream(5)
         val strim = DataOutputStream(out)
         strim.writeByte(ID_SET_SPEED.toInt())
@@ -82,10 +86,10 @@ class LightShowService : Service() {
     super.onCreate()
     socket = DatagramSocket(43594)
 
-    bg {
+    scope.launch {
       query()
       stateAvailable = true
-      stateAvailableCallback?.onStateAvailable(this, _color, _brightness, _speedFactor)
+      stateAvailableCallback?.onStateAvailable(this@LightShowService, _color, _brightness, _speedFactor)
     }
   }
 
@@ -135,7 +139,7 @@ class LightShowService : Service() {
   }
 
   private fun writeData(buf: ByteArray) {
-    bg { socket!!.send(DatagramPacket(buf, buf.size, dest)) }
+    scope.launch { socket!!.send(DatagramPacket(buf, buf.size, dest)) }
   }
 
   inner class LocalBinder : Binder() {

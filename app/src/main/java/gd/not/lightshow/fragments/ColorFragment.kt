@@ -9,7 +9,6 @@ import android.graphics.PorterDuff
 import android.util.Log
 import gd.not.lightshow.LightShowService
 
-
 /**
  * Created by alex on 26/08/2017.
  */
