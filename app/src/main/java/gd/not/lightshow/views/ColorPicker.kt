@@ -73,6 +73,13 @@ class ColorPicker : View {
       }
     }
 
+    val left = paddingLeft.toFloat() + (segRadius * 5.5f)
+    val top = paddingTop.toFloat() + (segRadius * 10f)
+    val right = width.toFloat() - (paddingRight + (segRadius * 5.5f))
+    val bottom = height.toFloat() - (paddingBottom + (segRadius * 10f))
+    paint.setARGB(255, 255, 255, 255)
+    canvas?.drawOval(left, top, right, bottom, paint)
+
     bitmap = getDrawingCache(true)
   }
 

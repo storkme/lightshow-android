@@ -2,6 +2,7 @@ package gd.not.lightshow.fragments
 
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,17 +19,18 @@ class BounceFragment : LightshowFragment(), BounceView.OnBounceListener {
   private val binding get() = _binding!!
 
   override fun getLayoutId(): Int = R.layout.fragment_bounce
+  override fun createView(view: View) {
+    TODO("Not yet implemented")
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater?,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return (FragmentBounceBinding.inflate(inflater!!, container, false).also { _binding = it }).root
-  }
+    _binding = FragmentBounceBinding.inflate(inflater!!, container, false)
 
-  override fun createView(view: View) {
-    val bounceView = view.find<BounceView>(R.id.bouncer)
-    bounceView.listener = this
+    binding.bouncer.listener = this
 
     binding.buttonReset.setOnClickListener {
       service?.clearDots()
@@ -53,6 +55,8 @@ class BounceFragment : LightshowFragment(), BounceView.OnBounceListener {
         }
       }
     })
+
+    return binding.root
   }
 
   override fun onStateAvailable(service: LightShowService, color: Int, brightness: Int, speedFactor: Float) {
@@ -60,6 +64,7 @@ class BounceFragment : LightshowFragment(), BounceView.OnBounceListener {
   }
 
   override fun onDotPlaced(color: Int, size: Int, position: Int) {
+    Log.d(TAG, "dot placed bitch")
 //    mainActivity?.setColor(color, false)
     binding.speed.progressDrawable?.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
     service?.dot(color, position, size)

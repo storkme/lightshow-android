@@ -88,6 +88,7 @@ class BounceView : View {
         dotSize = 0
       }
       MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+        Log.d(TAG, "dot placed")
         touchedX = event.x
         touchedY = event.y
         touching = true
